@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Registration</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-pink-50">
+    <div class="container mx-auto p-6 flex justify-center items-center">
+        <div class="w-1/2 mr-4">
+            <img src="https://img.freepik.com/free-vector/sign-concept-illustration_114360-5475.jpg?size=626&ext=jpg&ga=GA1.1.184299391.1710901833&semt=ais" alt="Registration Image" class="rounded-md shadow-md">
+        </div>
+        <div class="w-1/2">
+            
+            <form action="/register" method="POST" class="bg-pink-100 shadow-md rounded px-8 pt-2 pb-8 mb-2">
+                <div class="mb-4">
+                    <label for="firstName" class="block text-gray-700 text-sm font-bold mb-2">First Name:</label>
+                    <input type="text" id="firstName" name="firstName" required class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="mb-4">
+                    <label for="lastName" class="block text-gray-700 text-sm font-bold mb-2">Last Name:</label>
+                    <input type="text" id="lastName" name="lastName" required class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="mb-4">
+                    <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email:</label>
+                    <input type="email" id="email" name="email" required class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Gender:</label>
+                    <div class="flex">
+                        <label for="male" class="mr-4">
+                            <input type="radio" id="male" name="gender" value="male" required class="mr-2 leading-tight">
+                            Male
+                        </label>
+                        <label for="female">
+                            <input type="radio" id="female" name="gender" value="female" required class="mr-2 leading-tight">
+                            Female
+                        </label>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label for="phone" class="block text-gray-700 text-sm font-bold mb-2">Phone Number:</label>
+                    <input type="tel" id="phone" name="phone" required class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="mb-4">
+                    <label for="age" class="block text-gray-700 text-sm font-bold mb-2">Age:</label>
+                    <input type="number" id="age" name="age" required class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Password:</label>
+                    <input type="password" id="password" name="password" required class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="mb-6">
+                    <label for="confirmPassword" class="block text-gray-700 text-sm font-bold mb-2">Confirm Password:</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="flex items-center justify-center">
+                    <button type="submit" class="bg-black hover:bg-pink-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <title>Budget Tracker</title>
+  <style>
+    /* General Styles */
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f5f5f5;
+  margin: 0;
+  padding: 0;
+}
+
+/* Dashboard Layout */
+.dashboard {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  background-color: #333;
+  color: #565555;
+  padding: 20px;
+  min-width: 250px;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+}
+
+/* Container Styles */
+.container {
+  margin-top: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.container h2 {
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.container h4 {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+/* Form Styles */
+.form-control {
+  margin-bottom: 10px;
+}
+
+.form-control label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-control input[type="text"],
+.form-control input[type="number"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+/* Button Styles */
+.btn {
+  background-color: #4CAF50;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.btn:hover {
+  background-color: #45a049;
+}
+
+/* Chart and List Styles */
+.chart-container,
+.list-container {
+  margin-bottom: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+}
+
+.list li {
+  padding: 10px;
+  margin-bottom: 5px;
+  background-color: #f4f4f4;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.list li.minus {
+  background-color: #f44336;
+  color: #fff;
+}
+
+.list li.plus {
+  background-color: #4CAF50;
+  color: #fff;
+}
+
+.delete-btn {
+  background-color: #f44336;
+  color: #fff;
+  border: none;
+  padding: 5px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+  background-color: #d32f2f;
+}
+
+/* Mobile Styles */
+@media (max-width: 767px) {
+  .dashboard {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    min-width: auto;
+    padding: 10px;
+  }
+
+  .main-content {
+    padding: 10px;
+  }
+
+  .container,
+  .chart-container,
+  .list-container {
+    padding: 10px;
+  }
+
+  .form-control input[type="text"],
+  .form-control input[type="number"] {
+    font-size: 16px;
+  }
+
+  .btn {
+    font-size: 16px;
+    
+  }
+}
+  </style>
+</head>
+<body>
+  {{>navbar}}
+  <div class="dashboard">
+    <div class="sidebar">
+      <h2 style="color: #f5f5f5;">Budget Tracker</h2>
+      <div class="container">
+        <h4>Your Balance</h4>
+        <h1 id="balance">0.00</h1>
+        <div class="inc-exp container">
+          <div>
+            <h4>Income</h4>
+            <p id="money-plus" class="money plus">0.00</p>
+          </div>
+          <div>
+            <h4>Expense</h4>
+            <p id="money-minus" class="money minus">-0.00</p>
+          </div>
+        </div>
+        <h3>Add New Transaction</h3>
+        <form id="form">
+          <div class="form-control">
+            <label for="text">Transaction Name</label>
+            <input type="text" id="text" placeholder="Enter text&hellip; " class="">
+          </div>
+          <div class="form-control">
+            <label for="amount">Amount</label>
+            <input type="number" id="amount" placeholder="Enter amount&hellip; (e.g., 20 or -10)">
+          </div>
+          <button class="btn">Add Transaction</button>
+        </form>
+      </div>
+    </div>
+    <div class="main-content">
+      <div class="flex flex-wrap justify-center">
+        <div class="chart-container">
+          <canvas id="pieChart1"></canvas>
+        </div>
+        <div class="chart-container">
+          <canvas id="pieChart2"></canvas>
+        </div>
+        <div class="chart-container">
+          <canvas id="pieChart3"></canvas>
+        </div>
+      </div>
+      <div class="chart-container">
+        <canvas id="lineChart"></canvas>
+      </div>
+      <h3>Transaction History</h3>
+      <div class="container">
+        <ul id="list" class="list">
+        </ul>
+      </div>
+    </div>
+  </div>
+  <script>
+    "use strict";
+
+    const balance = document.getElementById('balance');
+    const money_plus = document.getElementById('money-plus');
+    const money_minus = document.getElementById('money-minus');
+    const list = document.getElementById('list');
+    const form = document.getElementById('form');
+    const text = document.getElementById('text');
+    const amount = document.getElementById('amount');
+    let pieChart1, pieChart2, pieChart3, lineChart;
+
+    let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+
+    function generateID() {
+      return new Date().getTime();
+    }
+
+    function addTransaction(e) {
+      e.preventDefault();
+
+      if (text.value.trim() === '' || amount.value.trim() === '') {
+        alert('Please add a Transaction Name and Amount');
+      } else {
+        const transaction = {
+          id: generateID(),
+          text: text.value,
+          amount: +amount.value
+        };
+
+        transactions.push(transaction);
+
+        addTransactionDOM(transaction);
+        updateValues();
+        updateLocalStorage();
+
+        text.value = '';
+        amount.value = '';
+      }
+    }
+
+    function addTransactionDOM(transaction) {
+      const sign = transaction.amount < 0 ? '-' : '+';
+
+      const item = document.createElement('li');
+      item.classList.add(transaction.amount < 0 ? 'minus' : 'plus');
+      item.innerHTML =  `
+        ${transaction.text} <span>${sign}${Math.abs(transaction.amount)}</span> 
+        <button class="delete-btn" onclick="removeTransaction(${transaction.id})">X</button></li>
+      `;
+      list.appendChild(item);
+    }
+
+    function updateValues() {
+      const amounts = transactions.map(transaction => transaction.amount);
+      const total = amounts.reduce((acc, val) => (acc += val), 0).toFixed(2);
+      const income = amounts.filter(transaction => transaction > 0).reduce((acc, val) => (acc += val), 0).toFixed(2);
+      const expense = amounts.filter(transaction => transaction < 0).reduce((acc, val) => (acc += val), 0).toFixed(2);
+      const fixedExpense = amounts.filter(transaction => transaction < 0 && transaction <= -50).reduce((acc, val) => (acc += val), 0).toFixed(2);
+      const variableExpense = amounts.filter(transaction => transaction < 0 && transaction > -50).reduce((acc, val) => (acc += val), 0).toFixed(2);
+      const housingExpense = amounts.filter(transaction => transaction < 0 && transaction <= -100).reduce((acc, val) => (acc += val), 0).toFixed(2);
+      const transportationExpense = amounts.filter(transaction => transaction < 0 && transaction > -100 && transaction <= -50).reduce((acc, val) => (acc += val), 0).toFixed(2);
+      const foodExpense = amounts.filter(transaction => transaction < 0 && transaction > -50 && transaction <= -20).reduce((acc, val) => (acc += val), 0).toFixed(2);
+      const otherExpense = amounts.filter(transaction => transaction < 0 && transaction > -20).reduce((acc, val) => (acc += val), 0).toFixed(2);
+
+      balance.innerHTML = `${total}`;
+      money_plus.innerHTML = `${income}`;
+      money_minus.innerHTML = `${Math.abs(expense)}`;
+
+      const pieData1 = {
+        labels: ['Income', 'Expense'],
+        datasets: [{
+          data: [income, Math.abs(expense)],
+          backgroundColor: ['#36A2EB', '#FF6384']
+        }]
+      };
+
+      const pieData2 = {
+        labels: ['Fixed Expense', 'Variable Expense'],
+        datasets: [{
+          data: [Math.abs(fixedExpense), Math.abs(variableExpense)],
+          backgroundColor: ['#9B59B6', '#E74C3C']
+        }]
+      };
+
+      const pieData3 = {
+        labels: ['Housing', 'Transportation', 'Food', 'Other'],
+        datasets: [{
+          data: [Math.abs(housingExpense), Math.abs(transportationExpense), Math.abs(foodExpense), Math.abs(otherExpense)],
+          backgroundColor: ['#2980B9', '#8E44AD', '#27AE60', '#F1C40F']
+        }]
+      };
+
+      const lineData = {
+        labels: transactions.map(transaction => transaction.text),
+        datasets: [{
+          label: 'Amount',
+          data: amounts,
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        }]
+      };
+
+      // Initialize or update the pie charts
+      const pieChartCtx1 = document.getElementById('pieChart1').getContext('2d');
+      const pieChartCtx2 = document.getElementById('pieChart2').getContext('2d');
+      const pieChartCtx3 = document.getElementById('pieChart3').getContext('2d');
+      if (pieChart1) {
+        pieChart1.data = pieData1;
+        pieChart1.update();
+        pieChart2.data = pieData2;
+        pieChart2.update();
+        pieChart3.data = pieData3;
+        pieChart3.update();
+      } else {
+        pieChart1 = new Chart(pieChartCtx1, {
+          type: 'pie',
+          data: pieData1,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+        pieChart2 = new Chart(pieChartCtx2, {
+          type: 'pie',
+          data: pieData2,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+        pieChart3 = new Chart(pieChartCtx3, {
+          type: 'pie',
+          data: pieData3,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+      }
+
+      // Initialize or update the line chart
+      const lineChartCtx = document.getElementById('lineChart').getContext('2d');
+      if (lineChart) {
+        lineChart.data = lineData;
+        lineChart.update();
+      } else {
+        lineChart = new Chart(lineChartCtx, {
+          type: 'line',
+          data: lineData,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+      }
+    }
+
+    function removeTransaction(id) {
+      transactions = transactions.filter(transaction => transaction.id !== id);
+      updateLocalStorage();
+      init();
+    }
+
+    function updateLocalStorage() {
+      localStorage.setItem('transactions', JSON.stringify(transactions));
+    }
+
+    function init() {
+      list.innerHTML = '';
+      transactions.forEach(addTransactionDOM);
+      updateValues();
+    }
+
+    form.addEventListener('submit', addTransaction);
+
+    init();
+  </script>
+  <div>
+   
+  </div>
+</body>
+</html>

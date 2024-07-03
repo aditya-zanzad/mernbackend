@@ -1,0 +1,32 @@
+/* Reset default margin and padding */
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+/* Navbar styles */
+.navbar {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 0;
+    text-align: center;
+}
+
+/* Container styles */
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    text-align: center;
+}
+
+/* Heading styles */
+h1 {
+    font-size: 36px;
+    color: #333;
+}
+
+/* Paragraph styles */
+p {
+    font-size: 18px;
+    color: #666;
+}
